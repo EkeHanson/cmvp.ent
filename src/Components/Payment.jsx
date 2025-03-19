@@ -18,6 +18,11 @@ function Payment() {
     const vat = amount * 0.075; // 7.5% VAT
     const total = amount + vat;
 
+
+    console.log("user")
+    console.log(user)
+    console.log("user")
+    
     const featureLabels = {
         storage: "Storage",
         twentyFourSevenSupport: "24/7 Support",
