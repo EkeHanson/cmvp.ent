@@ -55,6 +55,10 @@ function Payment() {
         });
     };
 
+    const handleFileChange = (event) => {
+        setPaymentProof(event.target.files[0]);
+    };
+    
     // Handle payment confirmation
     const handlePaymentConfirmation = async () => {
         if (!paymentProof) {
