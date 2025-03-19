@@ -79,6 +79,7 @@ const handleSubscribeClick = (plan) => {
     // console.log("plan")
 
     const authToken = sessionStorage.getItem("authToken");
+    
     const authUserId = sessionStorage.getItem("authUserId");
 
     if (!authToken) {

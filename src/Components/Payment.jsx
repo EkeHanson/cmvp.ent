@@ -18,11 +18,6 @@ function Payment() {
     const vat = amount * 0.075; // 7.5% VAT
     const total = amount + vat;
 
-
-    console.log("user")
-    console.log(user)
-    console.log("user")
-    
     const featureLabels = {
         storage: "Storage",
         twentyFourSevenSupport: "24/7 Support",
@@ -79,9 +74,9 @@ function Payment() {
 
         try {
             const formData = new FormData();
-            formData.append("email", user?.email);
-            formData.append("fullName", user?.name);
-            formData.append("phone", user?.phone);
+            formData.append("email",  sessionStorage.getItem("authEmail"));
+            formData.append("fullName", sessionStorage.getItem("authName"));
+            formData.append("phone", sessionStorage.getItem("authPhone"));
             formData.append("amount_paid", total);
             formData.append("subscription_duration", isYearly ? `${count} Year(s)` : `${count} Month(s)`);
             formData.append("subscription_type", plan_name);
