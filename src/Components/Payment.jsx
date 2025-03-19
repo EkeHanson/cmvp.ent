@@ -9,6 +9,7 @@ import config from "../config";
 function Payment() {
     const [paymentProof, setPaymentProof] = useState(null);
     const location = useLocation();
+    const [isSubmitting, setIsSubmitting] = useState(false); // Added state
     const { user, subscription_plan, plan_name, plan_price, plan_features } = location.state || {};
     const [isYearly, setIsYearly] = useState(false);
     const [count, setCount] = useState(1);
@@ -61,6 +62,7 @@ function Payment() {
     };
 
     // Handle payment confirmation
+
     const handlePaymentConfirmation = async () => {
         if (!paymentProof) {
             Swal.fire({
@@ -72,9 +74,11 @@ function Payment() {
             return;
         }
 
+        setIsSubmitting(true); // Start loading
+
         try {
             const formData = new FormData();
-            formData.append("email",  sessionStorage.getItem("authEmail"));
+            formData.append("email", sessionStorage.getItem("authEmail"));
             formData.append("fullName", sessionStorage.getItem("authName"));
             formData.append("phone", sessionStorage.getItem("authPhone"));
             formData.append("amount_paid", total);
@@ -82,18 +86,18 @@ function Payment() {
             formData.append("subscription_type", plan_name);
             formData.append("payment_proof", paymentProof);
 
-            const response = await axios.post(`${config.API_BASE_URL}/api/accounts/auth/send-subscription-email/`, formData, {
-                headers: { "Content-Type": "multipart/form-data" }
-            });
+            const response = await axios.post(
+                `${config.API_BASE_URL}/api/accounts/auth/send-subscription-email/`,
+                formData,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
 
             if (response.status === 200 || response.message === "Email sent successfully") {
                 Swal.fire({
                     title: "Thank you!",
-                    text: "We will confirm your payment and update your subscription within 48 hours",
+                    text: "We will confirm your payment and update your subscription within 48 hours.",
                     icon: "success",
                     confirmButtonText: "OK",
-                    showClass: { popup: "animate__animated animate__fadeInDown" },
-                    hideClass: { popup: "animate__animated animate__fadeOutUp" }
                 });
             } else {
                 throw new Error("Failed to send confirmation email.");
@@ -106,6 +110,8 @@ function Payment() {
                 icon: "error",
                 confirmButtonText: "OK",
             });
+        } finally {
+            setIsSubmitting(false); // Stop loading
         }
     };
 
@@ -213,9 +219,13 @@ function Payment() {
                                 <input type="file" onChange={handleFileChange} />
                             </div>
 
-                            {/* Confirmation Button */}
-                            <button className="confrim-btn" onClick={handlePaymentConfirmation}>
-                                I’ve Sent the Money
+                            {/* Confirmation Button with Loader */}
+                            <button
+                                className="confrim-btn"
+                                onClick={handlePaymentConfirmation}
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? "Submitting..." : "I’ve Sent the Money"}
                             </button>
                         </div>
 
