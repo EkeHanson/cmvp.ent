@@ -9,19 +9,20 @@ import ShowPassIcon from "../assets/Img/showPass-icon.svg";
 import HidePassIcon from "../assets/Img/hidePass-icon.svg";
 
 const Signup = () => {
-
   const [flash, setFlash] = useState(null);
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
 
   const showMessage = (message, type) => {
-      setFlash({ message, type });
-    };
-
+    setFlash({ message, type });
+  };
 
   const navigate = useNavigate();
-  const [isChecked, setIsChecked] = useState(false); // Track checkbox state
-
+  const [isChecked, setIsChecked] = useState(false);
   const [passwordType, setPasswordType] = useState("password");
-  const [confirmPasswordType, setConfirmPasswordType] = useState("password"); // State for confirm password visibility
+  const [confirmPasswordType, setConfirmPasswordType] = useState("password");
   const [formData, setFormData] = useState({
     email: "",
     companyName: "",
@@ -39,16 +40,38 @@ const Signup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState("");
 
+  useEffect(() => {
+    // Fetch countries data from the API
+    const fetchCountries = async () => {
+      try {
+        const response = await axios.get("https://countriesnow.space/api/v0.1/countries/states");
+        setCountries(response.data.data);
+      } catch (error) {
+        console.error("Error fetching countries:", error);
+      }
+    };
+
+    fetchCountries();
+  }, []);
+
+  const handleCountryChange = (e) => {
+    const countryName = e.target.value;
+    setSelectedCountry(countryName);
+    const selectedCountryData = countries.find((country) => country.name === countryName);
+    setStates(selectedCountryData ? selectedCountryData.states : []);
+    setSelectedState("");
+  };
+
+  const handleStateChange = (e) => {
+    setSelectedState(e.target.value);
+  };
+
   const togglePasswordVisibility = () => {
-    setPasswordType((prevType) =>
-      prevType === "password" ? "text" : "password"
-    );
+    setPasswordType((prevType) => (prevType === "password" ? "text" : "password"));
   };
 
   const toggleConfirmPasswordVisibility = () => {
-    setConfirmPasswordType((prevType) =>
-      prevType === "password" ? "text" : "password"
-    );
+    setConfirmPasswordType((prevType) => (prevType === "password" ? "text" : "password"));
   };
 
   const handleInputChange = (e) => {
@@ -75,7 +98,7 @@ const Signup = () => {
 
     if (!isChecked) {
       setErrorMessage("You must agree to the Terms of Use and Privacy Policy.");
-      showMessage("You must agree to the Terms of Use and Privacy Policy.", "failure")
+      showMessage("You must agree to the Terms of Use and Privacy Policy.", "failure");
       return;
     }
 
@@ -94,6 +117,8 @@ const Signup = () => {
     formDataToSend.append("registration_number", formData.registration_number);
     formDataToSend.append("company_official_mail", formData.company_official_mail);
     formDataToSend.append("password", formData.password);
+    formDataToSend.append("nationality", selectedCountry);
+    formDataToSend.append("state", selectedState);
 
     if (formData.logo) {
       formDataToSend.append("logo", formData.logo);
@@ -109,7 +134,7 @@ const Signup = () => {
           },
         }
       );
-    
+
       setSuccessMessage(
         "Account created successfully. Please check your email to confirm your account."
       );
@@ -122,27 +147,24 @@ const Signup = () => {
         registration_number: "",
         confirmPassword: "",
         company_official_mail: "",
-
         logo: null,
       });
-    
+
       showMessage("Account created successfully. Please check your email to confirm your account.", "success");
       navigate(`/verification-code/:code/${formData.email}`);
-    
     } catch (error) {
       console.error("Signup error:", error.response?.data);
-    
+
       if (error.response?.data?.errors) {
         const errorDetails = error.response.data.errors;
         let errorMessages = "";
-    
+
         Object.keys(errorDetails).forEach((field) => {
           errorMessages += `${field}: ${errorDetails[field].join(", ")}\n`;
         });
-    
+
         setErrorMessage(errorMessages);
         showMessage(errorMessages, "failure");
-
       } else {
         setErrorMessage("Failed to create an account. Please try again.");
         navigate(`/verification-code/:code/${formData.email}`);
@@ -150,9 +172,7 @@ const Signup = () => {
     } finally {
       setIsLoading(false);
     }
-    
   };
-  
 
   const assessPasswordStrength = (password) => {
     if (!password) return "";
@@ -181,11 +201,9 @@ const Signup = () => {
     }
   };
 
-
   const handleCheckboxChange = (e) => {
     setIsChecked(e.target.checked);
   };
-
   return (
     <div>
       <section className="Get-Seecos signup-desis">
@@ -281,7 +299,7 @@ const Signup = () => {
                 </div>
 
 
-
+{/* 
                 <div className="Reg_Input">
                   <label>Country</label>
                   <select>
@@ -297,9 +315,31 @@ const Signup = () => {
                     <option>--Select City--</option>
                     <option>Umahia Abia state</option>
                   </select>
+                </div> */}
+
+                <div className="Reg_Input">
+                    <label>Country</label>
+                    <select value={selectedCountry} onChange={handleCountryChange} required>
+                      <option value="">--Select Country--</option>
+                      {countries.map((country) => (
+                        <option key={country.iso3} value={country.name}>
+                          {country.name}
+                        </option>
+                      ))}
+                    </select>
                 </div>
 
-
+                <div className="Reg_Input">
+                  <label>State</label>
+                  <select value={selectedState} onChange={handleStateChange} required>
+                    <option value="">--Select State--</option>
+                    {states.map((state) => (
+                      <option key={state.state_code} value={state.name}>
+                        {state.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
                 <div className="Reg_Input Upload-input">
                   <label>Upload Company Logo</label>
