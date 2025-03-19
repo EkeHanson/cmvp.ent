@@ -7,6 +7,7 @@ import axios from "axios";
 import config from "../config";
 
 function Payment() {
+    const [paymentProof, setPaymentProof] = useState(null);
     const location = useLocation();
     const { user, subscription_plan, plan_name, plan_price, plan_features } = location.state || {};
     const [isYearly, setIsYearly] = useState(false);
@@ -58,7 +59,7 @@ function Payment() {
     const handleFileChange = (event) => {
         setPaymentProof(event.target.files[0]);
     };
-    
+
     // Handle payment confirmation
     const handlePaymentConfirmation = async () => {
         if (!paymentProof) {
