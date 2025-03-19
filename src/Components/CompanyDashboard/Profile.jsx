@@ -5,17 +5,20 @@ import CopyIcon from './Img/copyicon.svg';
 import PhotoEditIcon from './Img/edit_icon.svg';
 import AngleDownIcon from './Img/angle-down.svg';
 import config from '../../config.jsx';
-
-import FlashMessage from "../FlashMessage/FlashMessage.jsx"
+import axios from "axios";
+import FlashMessage from "../FlashMessage/FlashMessage.jsx";
 
 export default function Profile({ orgId }) {
-
     const [flash, setFlash] = useState(null);
-    
+    const [countries, setCountries] = useState([]);
+    const [states, setStates] = useState([]);
+    const [selectedCountry, setSelectedCountry] = useState("");
+    const [selectedState, setSelectedState] = useState("");
+
     const showMessage = (message, type) => {
-          setFlash({ message, type });
-        };
-    
+        setFlash({ message, type });
+    };
+
     const organizationID = sessionStorage.getItem("authUserId");
     const organizationName = sessionStorage.getItem("authName");
 
@@ -30,27 +33,47 @@ export default function Profile({ orgId }) {
     const [nationality, setNationality] = useState("");
     const [staffNumber, setStaffNumber] = useState("");
     const [cityAddress, setCityAddress] = useState("");
-    const [country, setCountry] = useState("");
-    const [state, setState] = useState("");
     const [imgSrc, setImgSrc] = useState(userImg);
     const [organizationDATA, setOrganizationDATA] = useState(userImg);
 
-    // Fetch organization data
+    useEffect(() => {
+        const fetchCountries = async () => {
+            try {
+                const response = await axios.get("https://countriesnow.space/api/v0.1/countries/states");
+                setCountries(response.data.data);
+            } catch (error) {
+                console.error("Error fetching countries:", error);
+            }
+        };
+
+        fetchCountries();
+    }, []);
+
+    const handleCountryChange = (e) => {
+        const countryName = e.target.value;
+        setSelectedCountry(countryName);
+        const selectedCountryData = countries.find((country) => country.name === countryName);
+        setStates(selectedCountryData ? selectedCountryData.states : []);
+        setSelectedState("");
+    };
+
+    const handleStateChange = (e) => {
+        setSelectedState(e.target.value);
+    };
+
     useEffect(() => {
         const fetchOrganizationData = async () => {
             try {
                 const response = await fetch(`${config.API_BASE_URL}/api/accounts/auth/organizations/${organizationID}/`);
                 if (response.ok) {
                     const data = await response.json();
-                    const organizationData = data; // Assuming the data is under 'data' key
-                    setOrganizationDATA(organizationData)
-    
-                    // Ensure yearIncorporated is in YYYY-MM-DD format
+                    const organizationData = data;
+                    setOrganizationDATA(organizationData);
+
                     const yearIncorporatedFormatted = organizationData.year_incorporated
-                        ? organizationData.year_incorporated.split('T')[0] // Remove time and keep date part
+                        ? organizationData.year_incorporated.split('T')[0]
                         : "";
-    
-                    // Set the fields with the fetched data
+
                     setCompanyName(organizationData.name || "");
                     setBusinessType(organizationData.business_type || "");
                     setContactFirstName(organizationData.contact_first_name || "");
@@ -61,13 +84,9 @@ export default function Profile({ orgId }) {
                     setNationality(organizationData.nationality || "");
                     setStaffNumber(organizationData.staff_number || "");
                     setCityAddress(organizationData.address || "");
-                    setCountry(organizationData.nationality || "");
-                    setState(organizationData.state || "");
+                    setSelectedCountry(organizationData.nationality || "");
+                    setSelectedState(organizationData.state || "");
                     setImgSrc(organizationData.logo || "");
-
-                    // console.log("organizationData Logo")
-                    // console.log(organizationDATA.logo)
-                    // console.log("organizationData Logo")
                 } else {
                     console.error("Error fetching organization data");
                 }
@@ -75,10 +94,10 @@ export default function Profile({ orgId }) {
                 console.error("Error fetching organization data", error);
             }
         };
-    
+
         fetchOrganizationData();
     }, [organizationID]);
-    
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -103,11 +122,11 @@ export default function Profile({ orgId }) {
         formData.append("contact_telephone", contactTelephone);
         formData.append("year_incorporated", yearIncorporated);
         formData.append("registration_number", registrationNumber);
-        formData.append("nationality", nationality);
+        formData.append("nationality", selectedCountry);
         formData.append("staff_number", staffNumber);
         formData.append("city_address", cityAddress);
-        formData.append("country", country);
-        formData.append("state", state);
+        formData.append("country", selectedCountry);
+        formData.append("state", selectedState);
 
         const fileInput = document.getElementById("file-upload");
         if (fileInput.files[0]) {
@@ -122,12 +141,8 @@ export default function Profile({ orgId }) {
 
             if (response.ok) {
                 const data = await response.json();
-                //console.log("Organization updated:", data);
-               // alert("Organization updated:", data);
-
-            //    const organizationName = sessionStorage.setItem("authName");
                 sessionStorage.setItem("authName", data.name);
-                showMessage('Organization data updated successfully', 'success')
+                showMessage('Organization data updated successfully', 'success');
             } else {
                 const data = await response.json();
                 console.error("Error updating organization:", data.message);
@@ -152,13 +167,11 @@ export default function Profile({ orgId }) {
 
     const [isUploadBoxTogglerActive, setIsUploadBoxTogglerActive] = useState(false);
     const [isUploadEnvHidden, setIsUploadEnvHidden] = useState(false);
-    const [isCertificateSectionVisible, setIsCertificateSectionVisible] = useState(false);
 
     const toggleUploadEnvVisibility = () => {
         setIsUploadEnvHidden(!isUploadEnvHidden);
         setIsUploadBoxTogglerActive(!isUploadBoxTogglerActive);
     };
-
 
     return (
         <div className="profile-Sec">
@@ -167,9 +180,8 @@ export default function Profile({ orgId }) {
                     className={`Upload_Box_Toggler ${isUploadBoxTogglerActive ? 'Active_Upload_Box_Toggler' : ''}`}
                     onClick={toggleUploadEnvVisibility}
                 >
-                     Profile<img src={ AngleDownIcon} alt="Angle Down Icon" />
+                    Profile<img src={AngleDownIcon} alt="Angle Down Icon" />
                 </h3>
-               
             </div>
 
             <div className={`Upload_env_main ${isUploadEnvHidden ? 'Hide_Envi_Box' : ''}`}>
@@ -180,13 +192,10 @@ export default function Profile({ orgId }) {
                                 <input type="file" id="file-upload" onChange={handleFileChange} style={{ display: 'none' }} />
                                 <label htmlFor="file-upload" className="user-img">
                                     <img src={`${imgSrc || PhotoEditIcon}`} alt="User" id="img-display" />
-                                    {/* <span><img src={`${config.API_BASE_URL}${imgSrc || PhotoEditIcon}`} alt="Edit Icon" /></span> */}
-                                    {/* <span><img src={PhotoEditIcon} alt="Edit Icon" /></span> {config.API_BASE_URL}{imgSrc} */}
                                 </label>
                                 <div className="user-details">
                                     <h4>{companyName} Company Profile </h4>
                                     <div className="Copy_Url_Sec jhhaj-op">
-
                                         <div className="Copy_Url_box" onClick={handleCopy}>
                                             <div className="Copy_Url_box_Main">
                                                 <h3>{copyMessage}</h3>
@@ -201,7 +210,6 @@ export default function Profile({ orgId }) {
                                                 <img src={CopyIcon} alt="Copy Icon" />
                                             </button>
                                         </div>
-                                        
                                     </div>
                                     <p className="pop-PP">Click "save button" to reflect changes</p>
                                 </div>
@@ -209,14 +217,13 @@ export default function Profile({ orgId }) {
                         </div>
 
                         <div className="top-dash-2">
-
-                        {flash && (
-                            <FlashMessage
-                            message={flash.message}
-                            type={flash.type}
-                            onClose={() => setFlash(null)} // Remove flash message after timeout
-                            />
-                        )}
+                            {flash && (
+                                <FlashMessage
+                                    message={flash.message}
+                                    type={flash.type}
+                                    onClose={() => setFlash(null)}
+                                />
+                            )}
 
                             <div className="top-dash-2-main top-dash-2-main-1 active-top-dash-2-main">
                                 <div className="form-header">
@@ -257,7 +264,6 @@ export default function Profile({ orgId }) {
                                             onChange={(e) => setContactLastName(e.target.value)}
                                         />
                                     </div>
-                                    
                                     <div className="form-input">
                                         <p>Contact Telephone</p>
                                         <input
@@ -267,7 +273,6 @@ export default function Profile({ orgId }) {
                                             onChange={(e) => setContactTelephone(e.target.value)}
                                         />
                                     </div>
-
                                     <div className="form-input">
                                         <p>Year Incorporated</p>
                                         <input
@@ -295,25 +300,26 @@ export default function Profile({ orgId }) {
                                             onChange={(e) => setCityAddress(e.target.value)}
                                         />
                                     </div>
-           
                                     <div className="form-input">
                                         <p>Select Country</p>
-                                        <select value={state} onChange={(e) => setState(e.target.value)}>
-                                            <option value="">Select Country</option>
-                                            <option value="Lagos">Nigeria</option>
-                                            <option value="California">USA</option>
-                                            <option value="London">UK</option>
-                                            {/* Add more states as needed */}
+                                        <select value={selectedCountry} onChange={handleCountryChange} required>
+                                            <option value="">--Select Country--</option>
+                                            {countries.map((country) => (
+                                                <option key={country.iso3} value={country.name}>
+                                                    {country.name}
+                                                </option>
+                                            ))}
                                         </select>
                                     </div>
                                     <div className="form-input">
                                         <p>Select State</p>
-                                        <select value={state} onChange={(e) => setState(e.target.value)}>
-                                            <option value="">Select State</option>
-                                            <option value="Lagos">Lagos</option>
-                                            <option value="California">California</option>
-                                            <option value="London">London</option>
-                                            {/* Add more states as needed */}
+                                        <select value={selectedState} onChange={handleStateChange} required>
+                                            <option value="">--Select State--</option>
+                                            {states.map((state) => (
+                                                <option key={state.state_code} value={state.name}>
+                                                    {state.name}
+                                                </option>
+                                            ))}
                                         </select>
                                     </div>
                                     <div className="form-input">
