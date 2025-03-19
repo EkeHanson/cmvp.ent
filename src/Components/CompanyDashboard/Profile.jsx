@@ -36,6 +36,7 @@ export default function Profile({ orgId }) {
     const [imgSrc, setImgSrc] = useState(userImg);
     const [organizationDATA, setOrganizationDATA] = useState(userImg);
 
+    // Fetch countries and states
     useEffect(() => {
         const fetchCountries = async () => {
             try {
@@ -49,29 +50,37 @@ export default function Profile({ orgId }) {
         fetchCountries();
     }, []);
 
+    // Handle country change
     const handleCountryChange = (e) => {
         const countryName = e.target.value;
         setSelectedCountry(countryName);
+
+        // Find the selected country and set its states
         const selectedCountryData = countries.find((country) => country.name === countryName);
-        setStates(selectedCountryData ? selectedCountryData.states : []);
+        if (selectedCountryData) {
+            setStates(selectedCountryData.states || []);
+        } else {
+            setStates([]);
+        }
+
+        // Reset selected state
         setSelectedState("");
     };
 
+    // Handle state change
     const handleStateChange = (e) => {
         setSelectedState(e.target.value);
     };
 
+    // Fetch organization data
     useEffect(() => {
         const fetchOrganizationData = async () => {
             try {
                 const response = await fetch(`${config.API_BASE_URL}/api/accounts/auth/organizations/${organizationID}/`);
                 if (response.ok) {
                     const data = await response.json();
+                    console.log("Organization Data:", data);
 
-                    console.log("data")
-                    console.log(data)
-                    console.log("data")
-                    
                     const organizationData = data;
                     setOrganizationDATA(organizationData);
 
@@ -79,6 +88,7 @@ export default function Profile({ orgId }) {
                         ? organizationData.year_incorporated.split('T')[0]
                         : "";
 
+                    // Set form fields
                     setCompanyName(organizationData.name || "");
                     setBusinessType(organizationData.business_type || "");
                     setContactFirstName(organizationData.contact_first_name || "");
@@ -89,9 +99,21 @@ export default function Profile({ orgId }) {
                     setNationality(organizationData.nationality || "");
                     setStaffNumber(organizationData.staff_number || "");
                     setCityAddress(organizationData.address || "");
+                    setImgSrc(organizationData.logo || "");
+
+                    // Set selected country and state
                     setSelectedCountry(organizationData.nationality || "");
                     setSelectedState(organizationData.state || "");
-                    setImgSrc(organizationData.logo || "");
+
+                    // Fetch states for the selected country
+                    if (organizationData.nationality) {
+                        const selectedCountryData = countries.find(
+                            (country) => country.name === organizationData.nationality
+                        );
+                        if (selectedCountryData) {
+                            setStates(selectedCountryData.states || []);
+                        }
+                    }
                 } else {
                     console.error("Error fetching organization data");
                 }
@@ -101,8 +123,9 @@ export default function Profile({ orgId }) {
         };
 
         fetchOrganizationData();
-    }, [organizationID]);
+    }, [organizationID, countries]); // Add countries to dependency array
 
+    // Handle file upload
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -114,6 +137,7 @@ export default function Profile({ orgId }) {
         }
     };
 
+    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -159,6 +183,7 @@ export default function Profile({ orgId }) {
         setIsLoading(false);
     };
 
+    // Copy verification URL
     const [copyMessage, setCopyMessage] = useState('Copy verification Url');
 
     const handleCopy = () => {
@@ -170,6 +195,7 @@ export default function Profile({ orgId }) {
         setTimeout(() => setCopyMessage('Copy portal Url'), 2000);
     };
 
+    // Toggle upload environment visibility
     const [isUploadBoxTogglerActive, setIsUploadBoxTogglerActive] = useState(false);
     const [isUploadEnvHidden, setIsUploadEnvHidden] = useState(false);
 
