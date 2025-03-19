@@ -1,0 +1,33 @@
+/* src/components/Alert.css */
+.alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    color: #fff;
+    z-index: 4000;
+    font-size: 13px;
+  }
+  
+  .alert.success {
+    background-color: #4CAF50; /* Green */
+  }
+  
+  .alert.error {
+    background-color: #f44336; /* Red */
+  }
+  
+  .alert-message {
+    display: inline-block;
+  }
+  
+  .alert-close {
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-size: 20px;
+    margin-left: 15px;
+    cursor: pointer;
+  }
+  

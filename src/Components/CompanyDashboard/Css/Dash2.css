@@ -1,0 +1,263 @@
+/* Nav_Main */
+.Nav_Main button p,
+.Nav_Main ul li a p{
+    display: none !important;
+    padding-right: 20px !important;
+    transition: all 0.3s ease-in-out !important;
+    font-size: 14px !important;
+}
+
+.Left_Dash_Nav{
+    width: auto !important;
+    height: auto !important;
+    transform: translateY(-50%) !important;
+    top: 50% !important;
+    margin-left: 30px !important;
+    border-radius: 10px !important;
+    background-color: #0D2818 !important;
+    padding: 0px !important;
+    transition: all 0.3s ease-in-out !important;
+}
+@media screen and (max-width:1000px){
+    .Left_Dash_Nav{
+        margin-left: 20px !important;
+    }
+}
+
+@media screen and (max-width:500px){
+    .Left_Dash_Nav{
+        margin-left: 10px !important;
+    }
+}
+.Left_Dash_Nav:hover .Nav_Main ul li button p,
+.Left_Dash_Nav:hover .Nav_Main ul li a p{
+    display: inline-flex !important;
+}
+
+.Nav_Main ul li{
+    margin: 0px !important;
+}
+.Nav_Main ul li button,
+.Nav_Main ul li a{
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    grid-gap: 5px !important;
+} 
+
+.Nav_Main ul li a.ActiveLNav_Icon,
+.Nav_Main ul li button:hover,
+.Nav_Main ul li a:hover{
+    background-color: #164529 !important;
+    color: #7BF2AB !important;
+}
+
+.Nav_Main ul li button span,
+.Nav_Main ul li a span{
+    width: 50px !important;
+    height: 35px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.Nav_Main ul li button span svg,
+.Nav_Main ul li a span svg{
+    font-size: 20px !important;
+}
+
+
+.Top_NaV{
+    padding-left: 0px !important;
+}
+
+.Main_Top_NaV {
+    background: #EFF2F6 !important;
+    box-shadow: none !important;
+    border:none !important;
+}
+
+
+.dash_logo img{
+    max-width: 70px !important;
+}
+
+.Logout_Dash_Btn{
+    position: relative;
+    width: auto;
+    height: 35px;
+    padding: 0px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.CompanyDashbaord{
+    padding-left: 200px !important;
+    padding-right: 200px !important;
+}
+@media screen and (max-width:1100px){
+    .CompanyDashbaord{
+        padding:90px 0px !important;
+        padding-bottom: 0px !important;
+    }
+}
+.Copy_Url_Sec{
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+    grid-gap: 30px !important;
+    gap: 30px !important;
+}
+
+@media screen and (max-width:1000px){
+    .Copy_Url_Sec{
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    .Main_Port_Sec{
+        margin-top: 0px !important;
+    }
+
+}
+
+
+@media screen and (max-width:500px){
+    .Copy_Url_box{
+        width: 100% !important;
+        justify-content: space-between !important;
+    }
+
+    .Copy_Url_box_Main,
+    .Copy_Url_box_Main input{
+        width: 100% !important;
+    }
+}
+
+
+.Port_into h4{
+    font-size: 16px;
+    color: #3E526C;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.Port_into h2{
+    font-size: 30px;
+    font-weight: 800 !important;
+    margin-bottom: 7px;
+}
+@media screen and (max-width:500px){
+    .Port_into h4{
+        font-size: 15px !important;
+        margin-bottom: 7px !important;
+    }
+    .Port_into h2{
+        font-size: 20px !important;
+        margin-bottom: 5px !important;
+    }
+    .Port_into p{
+        font-size: 14px !important;
+    }
+}
+.Port_into p{
+    font-size: 15px;
+}
+
+
+.Port_into h2 span{
+    position: relative;
+    padding: 0px 10px;
+    z-index: 1;
+}
+
+.Port_into h2 span::before{
+    position: absolute;
+    content: '';
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-color: #fff;
+    border:2px solid #42CA67;
+    z-index: -100;
+}
+
+.Port_into h2 span i{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -10;
+}
+.Port_into h2 span i::after,
+.Port_into h2 span i::before{
+    position: absolute;
+    content: '';
+    width: 10px;
+    height: 10px;
+    background-color: #fff;
+    border:2px solid #42CA67;
+}
+
+.Port_into h2 span i:first-child::before{
+    left: -5px;
+    top: -5px;
+}
+
+.Port_into h2 span i:first-child::after{
+    right: -5px;
+    top: -5px;
+}
+
+.Port_into h2 span i:last-child::before{
+    left: -5px;
+    bottom: -5px;
+}
+
+.Port_into h2 span i:last-child::after{
+    right: -5px;
+    bottom: -5px;
+}
+
+
+.Upload_Table th{
+    font-weight: 700 !important;
+}
+
+.Cert_Form_input label{
+    margin-bottom: 10px !important;
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+
+.btn-bg2{
+    background: #0D2818 !important;
+    color: #fff !important;
+}
+
+.btn-bg2:hover{
+    background: #164529 !important;
+    color: #fff !important;
+}
+
+p.paopa{
+    color: #0D2818 !important;
+}
+
+.erroroo{
+    font-size: 14px !important;
+}
+
+
+.kjaiik2{
+    margin-top: 40px !important;
+    margin-bottom: 50px !important;
+}
+
+.kjaiik2 .oahhs_Card{
+    background-color: #0D2818 !important;
+    color: #fff !important;
+}

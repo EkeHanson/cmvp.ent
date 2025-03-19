@@ -1,0 +1,164 @@
+/* invoice-Envn */
+
+.invoice-Envn{
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    background-color: #fff;
+    padding: 50px;
+    font-size: 15px;
+}
+
+.top-invoice{
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.top-invoice img{
+    max-width: 250px;
+}
+
+.top-invoice h2{
+    font-size: 25px;
+    font-weight: 600;
+    color: #6b6b6b;
+}
+
+.sss-Suab-si{
+    position: relative;
+    width: 100%;
+    height: auto;
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    grid-gap: 30px;
+}
+
+.sss-Suab-si-1{
+    position: relative;
+    width: 400px;
+}
+
+.sss-Suab-si-1 ul{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    grid-gap: 5px;
+}
+
+.dd-fls-ul{
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 30px;
+    gap: 30px;
+    margin-top: 40px;
+}
+.dd-fls-ul ul h3{
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.sss-Suab-si-2{
+    position: relative;
+    width: 100%;
+    height: auto;
+}
+
+.sss-Suab-si-2 h2{
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.sss-Suab-si-2 ul{
+    position: relative;
+    width: 100%;
+    height: auto;
+    border-top: 1px solid #c5c3c3;
+    border-bottom: 1px solid #c5c3c3;
+}
+
+.sss-Suab-si-2 ul li{
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding:7px 10px;
+    font-weight: 700;
+}
+
+.sss-Suab-si-2 h3{
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding: 20px;
+    background-color: #d2fde6;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sss-Suab-si-2 h3 span{
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.yatysh-ssec{
+    position: relative;
+    width: 100%;
+    height: auto;
+    margin-top: 30px;
+}
+
+.yatysh-ssec h2{
+    font-size: 25px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+
+.ggauy-sec{
+    position: relative;
+    width: 100%;
+    height: auto;
+    margin-top: 30px;
+}
+
+.ggauy-sec h2{
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding: 10px 20px;
+    background-color: #fddac2;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.ggauy-sec ul li{
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding:10px 20px;
+    border-bottom: 1px solid #c5c3c3;
+}
+
+.ggauy-sec ul li:last-child{
+    background-color: #d2fde6;
+    font-size: 17px;
+    font-weight: 700;
+    padding: 20px;
+    border-bottom: none;
+}

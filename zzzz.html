@@ -1,0 +1,618 @@
+// import React, { useState, useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { Link, useLocation } from "react-router-dom";
+// import { HashLink } from 'react-router-hash-link';
+// import config from '../../config.jsx';
+// import './Css/Dash.css';
+
+
+// import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+// import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+// import DeleteIcon from '@mui/icons-material/Delete';
+// import InfoIcon from '@mui/icons-material/Info';
+// import PersonIcon from '@mui/icons-material/Person';
+// import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+// import LogoutIcon from '@mui/icons-material/Logout';
+// import PriceCheckIcon from '@mui/icons-material/PriceCheck';
+
+// import MenuIcon from '@mui/icons-material/Menu';
+
+// import LogoIcon from './Img/DashLogo.png';
+
+// import './Css/Dash.css';
+
+
+// export default function NavBar() {
+    
+//     const [daysLeft, setDaysLeft] = useState(null);
+//     const [allowed_num_0f_cert_upload, setAllowed_num_0f_cert_upload] = useState(null);
+//     const [organizationDatalogo, setOrganizationDataLogo] = useState(null); 
+//     const organizationID =  localStorage.getItem("authUserId");
+//     const organizationName =  localStorage.getItem("authName");
+//     const [isDropdownOpen, setDropdownOpen] = useState(false);
+//     const [isSidebarOpen, setSidebarOpen] = useState(false);
+//     const [isSubscribed, setIsSubscribed] = useState(false);
+//     const [showSearch, setShowSearch] = useState(false);
+//     const [activeDropIcon, setActiveDropIcon] = useState(false); 
+//     const location = useLocation();
+    
+//     const toggleDropdown = () => {
+
+//         setDropdownOpen(!isDropdownOpen);
+//         setActiveDropIcon(!activeDropIcon);
+//     };
+
+//     const toggleSidebar = () => {
+//         setSidebarOpen(!isSidebarOpen);
+//     };
+
+//     const closeSidebar = () => {
+//         setSidebarOpen(false);
+//     };
+
+//     const handleLinkClick = (path) => {
+//         closeSidebar();
+//     };
+
+//     const toggleSearch = () => {
+//         setShowSearch(!showSearch);
+//     };
+
+//     const closeSearch = () => {
+//         setShowSearch(false);
+//     };
+
+
+//     const navigate = useNavigate();
+
+//   useEffect(() => {
+//     const token = localStorage.getItem("authToken");
+//     if (!token) {
+//       // Redirect to login if no token
+//       navigate("/");
+//     }
+//   }, [navigate]);
+
+
+// useEffect(() => {
+//     const fetchDates = async () => {
+//       try {
+//         // Fetch organization data (for trial end date)
+//         const organizationResponse = await fetch(
+//           `${config.API_BASE_URL}/api/accounts/auth/organizations/${organizationID}/`
+//         );
+//         const organizationData = await organizationResponse.json();
+//         //console.log("Fetched organization data:", organizationData);
+//         // Fetch subscription data
+//         // Adjust your endpoint accordingly if you expect a single subscription object.
+
+//         const authToken = localStorage.getItem("authToken");
+//         const authUserId = localStorage.getItem("authUserId");
+//         const organizationSubscribed =  localStorage.getItem("is_subscribed");
+
+//         if (authToken && authUserId && organizationSubscribed) {
+//         const subscriptionResponse = await fetch(
+//           `${config.API_BASE_URL}/api/subscription/auth/api/user-subscriptions/active/?user=${organizationID}/`
+//         );
+//         const subscriptionData = await subscriptionResponse.json();
+//     }
+
+//         console.log("Fetched subscription data:", subscriptionData);
+  
+//         // Update state variables
+//         setIsSubscribed(organizationData.is_subscribed);
+//         setOrganizationDataLogo(organizationData.logo);
+  
+//         let endDate;
+//         if (organizationData.is_subscribed) {
+//            // console.log("Fetched organization data:", organizationData);
+//           // User is subscribed, use subscription end date
+//           endDate = new Date(subscriptionData.end_date);
+//           //console.log(subscriptionData.end_date);
+//         } else {
+//           // User is not subscribed, use trial end date
+//           endDate = new Date(organizationData.trial_end_date);
+//           // console.log("Fetched organization data : ", organizationData.trial_end_date);
+//         }
+  
+//         const today = new Date();
+//         const timeDiff = endDate - today;
+//         const daysRemaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+//         setDaysLeft(daysRemaining);
+
+//         if (daysLeft >= 1){
+//             localStorage.setItem("numDailyCertificateUpload", 5)
+//         }
+//          localStorage.setItem("numDailyCertificateUpload", 5)
+  
+//         // If the organization is subscribed and the subscription has expired...
+//         if (organizationData.is_subscribed && daysRemaining < 1) {
+//           // Send a PATCH request to update the subscription as inactive.
+//           const patchResponse = await fetch(
+//             `${config.API_BASE_URL}/api/subscription/auth/api/user-subscriptions/${subscriptionData.id}/`,
+//             {
+//               method: "PATCH",
+//               headers: {
+//                 "Content-Type": "application/json",
+//                 // Include Authorization header if required:
+//                 // "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+//               },
+//               body: JSON.stringify({ is_active: false }),
+//             }
+//           );
+  
+//           if (patchResponse.ok) {
+//             console.log("Subscription marked as inactive due to expiration.");
+//             // Optionally, update state here if you need to reflect the change in the UI.
+//           } else {
+//             console.error("Failed to update subscription status:", patchResponse.status);
+//           }
+//         }
+//       } catch (error) {
+//         console.error("Error fetching dates:", error);
+//       }
+//     };
+  
+//     fetchDates();
+//   }, [organizationID]);
+  
+
+//     return (
+//         <div className={`Dash_NavBar ${isSidebarOpen ? 'Toggle_NavBar' : ''}`}>
+//             <div className="NavBar_Body" onClick={closeSidebar}></div>
+//             <nav className="Left_Dash_Nav">
+
+//                 <div className="Nav_Main">
+//                     <ul>
+
+
+//                         <li>
+//                             <Link to="/dashboard/" className={location.pathname === "/dashboard/" ? 'ActiveLNav_Icon' : ''} onClick={() => handleLinkClick('/dashboard/')}>
+//                             <span> <CloudUploadIcon /></span>
+//                                 <p>Upload Certificate</p>
+//                             </Link>
+//                         </li>
+
+//                         <li>
+//                                     <Link to="/dashboard/uploaded-certificates" className={location.pathname === '/dashboard/uploaded-certificates' ? 'ActiveLNav_Icon' : ''} onClick={() => handleLinkClick('/dashboard/uploaded-certificates')}>
+//                                        <span> <AssignmentTurnedInIcon /></span>
+//                                         <p>Uploaded Certificates</p>
+//                                     </Link>
+//                                 </li>
+//                                 <li>
+//                                     <Link to="/dashboard/deleted-certificates" className={location.pathname === '/dashboard/deleted-certificates' ? 'ActiveLNav_Icon' : ''} onClick={() => handleLinkClick('/dashboard/deleted-certificates')}>
+//                                     <span> <DeleteIcon /></span>
+//                                        <p>Deleted Certificates</p>
+//                                     </Link>
+//                                 </li>
+
+
+//                         <li>
+//                             <Link to="/dashboard/logon-info" className={location.pathname === '/dashboard/logon-info' ? 'ActiveLNav_Icon' : ''} onClick={() => handleLinkClick('/dashboard/logon-info')}>
+//                             <span> <InfoIcon /></span>
+//                                 <p>Logon information</p>
+//                             </Link>
+//                         </li>
+
+                    
+
+                        
+//                         <li>
+//                             <Link to="/dashboard/pricing" className={location.pathname === '/dashboard/pricing' ? 'ActiveLNav_Icon' : ''} onClick={() => handleLinkClick('/dashboard/pricing')}>
+//                             <span> <PriceCheckIcon /></span>
+//                                 <p>Your Subscription</p>
+//                             </Link>
+//                         </li>
+
+
+//                         <li>
+//                             <Link to="/dashboard/subscription" className={location.pathname === '/dashboard/subscription' ? 'ActiveLNav_Icon' : ''} onClick={() => handleLinkClick('/dashboard/subscription')}>
+//                             <span> <AttachMoneyIcon /></span>
+//                                 <p>Subscription Plans</p>
+//                             </Link>
+//                         </li>
+
+
+//                         <li>
+//                             <Link to="/dashboard/profile" className={location.pathname === '/dashboard/profile' ? 'ActiveLNav_Icon' : ''} onClick={() => handleLinkClick('/dashboard/profile')}>
+//                             <span> <PersonIcon/></span>
+//                                 <p>Profile</p>
+//                             </Link>
+//                         </li>
+
+
+
+
+//                         <li>
+//                         <button onClick={() => {
+//                             localStorage.clear(); // Clear token
+//                             navigate("/"); // Redirect to login
+//                         }}>
+//                            <span> <LogoutIcon /></span>
+//                            <p>Logout </p>
+//                         </button>
+//                         </li>
+//                     </ul>
+//                 </div>
+//             </nav>
+
+//             <nav className="Top_NaV">
+        
+//                 <div className="Main_Top_NaV">
+//                     <div className="Large-container">
+//                         <div className="L_NN_V_Sec">
+//                             <Link to="/" className="dash_logo"><img src={LogoIcon}></img></Link>
+//                         </div>
+
+//                         <div className="R_NN_V_Sec">
+
+//                             {/* <div className="Sub_Conunter">
+                           
+//                             {daysLeft >= 1 ? (
+//                                 <>
+//                                 <span className={daysLeft < 4 ? "blinking-text" : ""}>{daysLeft}</span>
+//                                 <p><b> {daysLeft > 1 ? "days" : "day"} left</b> for your free trial</p>
+//                                 </>
+//                             ) : (
+//                                 <p>Your free trial period has expired</p>
+//                             )}
+//                             </div> */}
+
+//                             <div className="Sub_Conunter">
+//                                 {daysLeft >= 1 ? (
+//                                     <>
+//                                         <span className={daysLeft < 4 ? "blinking-text" : ""}>{daysLeft}</span>
+//                                         <p><b>{daysLeft > 1 ? "days" : "day"} left</b> {isSubscribed ? "in your subscription" : "for your free trial"}</p>
+//                                     </>
+//                                 ) : (
+//                                     <p>Your {isSubscribed ? "subscription" : "free trial"} period has expired</p>
+//                                 )}
+//                             </div>
+                            
+
+//                              <button onClick={() => {
+//                                         if (window.confirm("Are you sure you want to log out?")) {
+//                                             localStorage.clear(); // Clear token
+//                                             navigate("/"); // Redirect to login
+//                                         }
+//                                     }} className="Logout_Dash_Btn btn-bg2">
+//                                         Logout
+//                                     </button>
+
+//                                     <button className="gSide_Nav_toggler" onClick={toggleSidebar}><MenuIcon /></button>
+
+//                         </div>
+//                     </div>
+//                 </div>
+//             </nav>
+//         </div>
+//     );
+// }
+
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { HashLink } from "react-router-hash-link";
+import config from "../../config.jsx";
+import "./Css/Dash.css";
+
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import DeleteIcon from "@mui/icons-material/Delete";
+import InfoIcon from "@mui/icons-material/Info";
+import PersonIcon from "@mui/icons-material/Person";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import LogoutIcon from "@mui/icons-material/Logout";
+import PriceCheckIcon from "@mui/icons-material/PriceCheck";
+import MenuIcon from "@mui/icons-material/Menu";
+
+import LogoIcon from "./Img/DashLogo.png";
+import "./Css/Dash.css";
+
+export default function NavBar() {
+  // State variables
+  const [daysLeft, setDaysLeft] = useState(null);
+  const [allowed_num_0f_cert_upload, setAllowed_num_0f_cert_upload] = useState(null);
+  const [organizationDatalogo, setOrganizationDataLogo] = useState(null);
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [activeDropIcon, setActiveDropIcon] = useState(false);
+
+  // Get organization info from localStorage
+  const organizationID = localStorage.getItem("authUserId");
+  const organizationName = localStorage.getItem("authName");
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Toggle functions
+  const toggleDropdown = () => {
+    setDropdownOpen(!isDropdownOpen);
+    setActiveDropIcon(!activeDropIcon);
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
+  const handleLinkClick = (path) => {
+    closeSidebar();
+  };
+
+  const toggleSearch = () => {
+    setShowSearch(!showSearch);
+  };
+
+  const closeSearch = () => {
+    setShowSearch(false);
+  };
+
+  // Redirect to login if no token exists
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/");
+    }
+  }, [navigate]);
+
+  // Fetch organization and subscription data
+  useEffect(() => {
+    const fetchDates = async () => {
+      try {
+        // Fetch organization data (for trial end date)
+        const organizationResponse = await fetch(
+          `${config.API_BASE_URL}/api/accounts/auth/organizations/${organizationID}/`
+        );
+        const organizationData = await organizationResponse.json();
+        // console.log("Fetched organization data:", organizationData);
+
+        // Declare subscriptionData outside the if block so it’s accessible later.
+        let subscriptionData = null;
+
+        // Get additional info from localStorage
+        const authToken = localStorage.getItem("authToken");
+        const authUserId = localStorage.getItem("authUserId");
+        const organizationSubscribed = localStorage.getItem("is_subscribed");
+
+        if (authToken && authUserId && organizationSubscribed) {
+          const subscriptionResponse = await fetch(
+            `${config.API_BASE_URL}/api/subscription/auth/api/user-subscriptions/active/?user=${organizationID}/`
+          );
+          subscriptionData = await subscriptionResponse.json();
+        }
+
+        //console.log("Fetched subscription data:", subscriptionData);
+
+        // Update state variables
+        setIsSubscribed(organizationData.is_subscribed);
+        setOrganizationDataLogo(organizationData.logo);
+
+        // Determine which end date to use
+        let endDate;
+        if (organizationData.is_subscribed && subscriptionData) {
+          // User is subscribed, use subscription end date
+          endDate = new Date(subscriptionData.end_date);
+        } else {
+          // User is not subscribed, use trial end date
+          endDate = new Date(organizationData.trial_end_date);
+        }
+
+        // Calculate remaining days (using a local variable so we don’t rely on the asynchronous state update)
+        const today = new Date();
+        const timeDiff = endDate - today;
+        const daysRemaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+        setDaysLeft(daysRemaining);
+
+        // Set certificate upload limit (adjust as needed)
+        if (daysRemaining >= 1) {
+        localStorage.setItem("numDailyCertificateUpload", 5);
+        }
+
+        console.log("subscriptionData")
+        console.log(subscriptionData)
+        console.log("subscriptionData")
+
+        console.log("daysRemaining")
+        console.log(daysRemaining)
+        console.log("daysRemaining")
+
+        // If the organization is subscribed and the subscription has expired, update subscription status.
+        if (organizationData.is_subscribed && daysRemaining < 1) {
+          const patchResponse = await fetch(
+            `${config.API_BASE_URL}/api/subscription/auth/api/user-subscriptions/${subscriptionData.id}/`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                // Include Authorization header if needed:
+                // "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+              },
+              body: JSON.stringify({ is_active: false }),
+            }
+          );
+
+          const patchResponse2 = await fetch(
+
+            `${config.API_BASE_URL}/api/accounts/auth/organizations/${organizationID}/update-by-subscriber-id/`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                // Include Authorization header if needed:
+                // "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+              },
+              body: JSON.stringify({ is_verified: true }),
+            }
+          );
+
+          if (patchResponse.ok) {
+            console.log("Subscription marked as inactive due to expiration.");
+          } else {
+            console.error("Failed to update subscription status:", patchResponse.status);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching dates:", error);
+      }
+    };
+
+    fetchDates();
+  }, [organizationID]);
+
+  return (
+    <div className={`Dash_NavBar ${isSidebarOpen ? "Toggle_NavBar" : ""}`}>
+      <div className="NavBar_Body" onClick={closeSidebar}></div>
+      <nav className="Left_Dash_Nav">
+        <div className="Nav_Main">
+          <ul>
+            <li>
+              <Link
+                to="/dashboard/"
+                className={location.pathname === "/dashboard/" ? "ActiveLNav_Icon" : ""}
+                onClick={() => handleLinkClick("/dashboard/")}
+              >
+                <span>
+                  <CloudUploadIcon />
+                </span>
+                <p>Upload Certificate</p>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/dashboard/uploaded-certificates"
+                className={location.pathname === "/dashboard/uploaded-certificates" ? "ActiveLNav_Icon" : ""}
+                onClick={() => handleLinkClick("/dashboard/uploaded-certificates")}
+              >
+                <span>
+                  <AssignmentTurnedInIcon />
+                </span>
+                <p>Uploaded Certificates</p>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/dashboard/deleted-certificates"
+                className={location.pathname === "/dashboard/deleted-certificates" ? "ActiveLNav_Icon" : ""}
+                onClick={() => handleLinkClick("/dashboard/deleted-certificates")}
+              >
+                <span>
+                  <DeleteIcon />
+                </span>
+                <p>Deleted Certificates</p>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/dashboard/logon-info"
+                className={location.pathname === "/dashboard/logon-info" ? "ActiveLNav_Icon" : ""}
+                onClick={() => handleLinkClick("/dashboard/logon-info")}
+              >
+                <span>
+                  <InfoIcon />
+                </span>
+                <p>Logon information</p>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/dashboard/pricing"
+                className={location.pathname === "/dashboard/pricing" ? "ActiveLNav_Icon" : ""}
+                onClick={() => handleLinkClick("/dashboard/pricing")}
+              >
+                <span>
+                  <PriceCheckIcon />
+                </span>
+                <p>Your Subscription</p>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/dashboard/subscription"
+                className={location.pathname === "/dashboard/subscription" ? "ActiveLNav_Icon" : ""}
+                onClick={() => handleLinkClick("/dashboard/subscription")}
+              >
+                <span>
+                  <AttachMoneyIcon />
+                </span>
+                <p>Subscription Plans</p>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/dashboard/profile"
+                className={location.pathname === "/dashboard/profile" ? "ActiveLNav_Icon" : ""}
+                onClick={() => handleLinkClick("/dashboard/profile")}
+              >
+                <span>
+                  <PersonIcon />
+                </span>
+                <p>Profile</p>
+              </Link>
+            </li>
+            <li>
+              <button
+                onClick={() => {
+                  localStorage.clear();
+                  navigate("/");
+                }}
+              >
+                <span>
+                  <LogoutIcon />
+                </span>
+                <p>Logout</p>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <nav className="Top_NaV">
+        <div className="Main_Top_NaV">
+          <div className="Large-container">
+            <div className="L_NN_V_Sec">
+              <Link to="/" className="dash_logo">
+                <img src={LogoIcon} alt="Logo" />
+              </Link>
+            </div>
+            <div className="R_NN_V_Sec">
+              <div className="Sub_Conunter">
+                {daysLeft >= 1 ? (
+                  <>
+                    <span className={daysLeft < 4 ? "blinking-text" : ""}>{daysLeft}</span>
+                    <p>
+                      <b>{daysLeft > 1 ? "days" : "day"} left</b>{" "}
+                      {isSubscribed ? "in your subscription" : "for your free trial"}
+                    </p>
+                  </>
+                ) : (
+                  <p>Your {isSubscribed ? "subscription" : "free trial"} period has expired</p>
+                )}
+              </div>
+
+              <button
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to log out?")) {
+                    localStorage.clear();
+                    navigate("/");
+                  }
+                }}
+                className="Logout_Dash_Btn btn-bg2"
+              >
+                Logout
+              </button>
+
+              <button className="gSide_Nav_toggler" onClick={toggleSidebar}>
+                <MenuIcon />
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+  );
+}
