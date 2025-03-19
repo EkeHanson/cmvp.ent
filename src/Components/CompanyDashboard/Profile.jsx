@@ -67,6 +67,11 @@ export default function Profile({ orgId }) {
                 const response = await fetch(`${config.API_BASE_URL}/api/accounts/auth/organizations/${organizationID}/`);
                 if (response.ok) {
                     const data = await response.json();
+
+                    console.log("data")
+                    console.log(data)
+                    console.log("data")
+                    
                     const organizationData = data;
                     setOrganizationDATA(organizationData);
 
