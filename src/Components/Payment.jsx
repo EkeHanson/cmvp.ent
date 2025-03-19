@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import RemitaBDG from '../assets/Img/remita-bdg.png';
 import CheckIcon from '@mui/icons-material/Check';
@@ -9,6 +9,7 @@ import config from "../config";
 function Payment() {
     const [paymentProof, setPaymentProof] = useState(null);
     const location = useLocation();
+    const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false); // Added state
     const { user, subscription_plan, plan_name, plan_price, plan_features } = location.state || {};
     const [isYearly, setIsYearly] = useState(false);
@@ -26,20 +27,13 @@ function Payment() {
         num_daily_certificate_upload: "Number of Daily Certificate Uploads",
         access_deleted_certificates_files: "Access to Deleted Certificates & Files",
     };
-    
 
     const subscriptionBenefits = Object.entries(plan_features).map(([key, value]) => {
-        // Get a friendly label, default to formatted key if not in dictionary
         let formattedKey = featureLabels[key] || key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
-        
-        // Convert boolean values to "Yes" or "No"
         let formattedValue = typeof value === "boolean" ? (value ? "Yes" : "Yes") : value;
-    
         return `${formattedKey}: ${formattedValue}`;
     });
-    
 
-    // Toggle Monthly/Yearly selection
     const handleToggle = () => {
         setIsYearly(prevState => {
             setCount(1); // Reset count when toggling
@@ -47,7 +41,6 @@ function Payment() {
         });
     };
 
-    // Handle count increase/decrease
     const handleCountChange = (type) => {
         setCount(prevCount => {
             const maxCount = isYearly ? 1 : 12; // Max 1 year, max 12 months
@@ -61,7 +54,50 @@ function Payment() {
         setPaymentProof(event.target.files[0]);
     };
 
-    // Handle payment confirmation
+    const handleSubscribeClick = async (planId) => {
+        const authToken = sessionStorage.getItem("authToken");
+        const authUserId = sessionStorage.getItem("authUserId");
+
+        if (!authToken) {
+            Swal.fire({
+                title: "Error",
+                text: "Please login or register to continue",
+                icon: "error",
+                confirmButtonText: "OK",
+            });
+            navigate("/login");
+            return;
+        }
+
+        const payload = {
+            user: authUserId,
+            subscription_plan: planId,
+            subscribed_duration: isYearly ? count * 12 : count  // Convert years to months if yearly
+        };
+
+        try {
+            const response = await fetch(`${config.API_BASE_URL}/api/subscription/auth/api/user-subscriptions/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${authToken}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || "Failed to subscribe");
+            }
+
+            const result = await response.json();
+            return result; // Return the result to indicate success
+
+        } catch (error) {
+            console.error("Error subscribing:", error);
+            throw error; // Rethrow the error to handle it in the calling function
+        }
+    };
 
     const handlePaymentConfirmation = async () => {
         if (!paymentProof) {
@@ -77,6 +113,14 @@ function Payment() {
         setIsSubmitting(true); // Start loading
 
         try {
+            // Attempt to subscribe the user, but don't stop if it fails
+            try {
+                await handleSubscribeClick(subscription_plan);
+            } catch (subscriptionError) {
+                console.error("Subscription failed, but proceeding to send email:", subscriptionError);
+            }
+
+            // Send the email regardless of subscription success
             const formData = new FormData();
             formData.append("email", sessionStorage.getItem("authEmail"));
             formData.append("fullName", sessionStorage.getItem("authName"));
@@ -103,10 +147,10 @@ function Payment() {
                 throw new Error("Failed to send confirmation email.");
             }
         } catch (error) {
-            console.error("Error sending payment confirmation email:", error);
+            console.error("Error during payment confirmation:", error);
             Swal.fire({
                 title: "Error",
-                text: "There was an issue sending your payment confirmation. Please try again.",
+                text: error.message || "There was an issue with your payment confirmation. Please try again.",
                 icon: "error",
                 confirmButtonText: "OK",
             });
@@ -119,7 +163,6 @@ function Payment() {
         <div className="Payment-sec">
             <div className="site-container">
                 <div className="payment-main">
-                    
                     {/* Plan Selection */}
                     <div className="payment-main-top">
                         <h3>{plan_name}</h3>
@@ -134,7 +177,6 @@ function Payment() {
                     </div>
 
                     <div className="payment-body">
-                        
                         {/* Payment Method Section */}
                         <div className="payment-part-1">
                             <div className="payment-part-1-Main">
@@ -210,10 +252,6 @@ function Payment() {
                                 <span>NGN{total.toLocaleString()}</span>
                             </h3>
 
-                            {/* <div className="mm-poaymmsn">
-                                <label>Upload Proof of payment</label>
-                                <input type="file" />
-                            </div> */}
                             <div className="mm-poaymmsn">
                                 <label>Upload Proof of payment</label>
                                 <input type="file" onChange={handleFileChange} />
@@ -228,7 +266,6 @@ function Payment() {
                                 {isSubmitting ? "Submitting..." : "I’ve Sent the Money"}
                             </button>
                         </div>
-
                     </div> {/* End of payment-body */}
                 </div> {/* End of payment-main */}
             </div> {/* End of site-container */}

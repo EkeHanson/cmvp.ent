@@ -120,6 +120,7 @@ export default function Pricing() {
         }
     };
     
+    
 
     useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
